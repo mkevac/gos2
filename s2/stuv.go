@@ -3,7 +3,7 @@ package s2
 import (
 	"math"
 
-	"github.com/davidreynolds/gos2/r3"
+	"github.com/mkevac/gos2/r3"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"container/heap"
 	"sort"
 
-	"github.com/davidreynolds/gos2/s1"
+	"github.com/mkevac/gos2/s1"
 )
 
 type LoopMap map[*Loop][]*Loop

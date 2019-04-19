@@ -3,9 +3,9 @@ package s2
 import (
 	"math"
 
-	"github.com/davidreynolds/gos2/r1"
-	"github.com/davidreynolds/gos2/r2"
-	"github.com/davidreynolds/gos2/s1"
+	"github.com/mkevac/gos2/r1"
+	"github.com/mkevac/gos2/r2"
+	"github.com/mkevac/gos2/s1"
 )
 
 const (

@@ -4,8 +4,8 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/davidreynolds/gos2/r2"
-	"github.com/davidreynolds/gos2/s1"
+	"github.com/mkevac/gos2/r2"
+	"github.com/mkevac/gos2/s1"
 )
 
 func TestCellIDFromFace(t *testing.T) {

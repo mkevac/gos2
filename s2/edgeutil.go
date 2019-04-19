@@ -4,7 +4,7 @@ import (
 	"log"
 	"math"
 
-	"github.com/davidreynolds/gos2/s1"
+	"github.com/mkevac/gos2/s1"
 )
 
 const (
