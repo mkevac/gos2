@@ -1,6 +1,7 @@
 package s2
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/mkevac/gos2/r1"
@@ -58,9 +59,9 @@ type Loop struct {
 
 func NewLoopFromPath(vertices []Point) *Loop {
 	loop := &Loop{
-		vertices: make([]Point, len(vertices)),
-		bound:    FullRect(),
-		depth:    0,
+		vertices:              make([]Point, len(vertices)),
+		bound:                 FullRect(),
+		depth:                 0,
 		num_find_vertex_calls: 0,
 	}
 	loop.ResetMutableFields()
@@ -73,9 +74,9 @@ func NewLoopFromPath(vertices []Point) *Loop {
 
 func NewLoopFromCell(cell Cell) *Loop {
 	loop := &Loop{
-		vertices: make([]Point, 4),
-		bound:    cell.RectBound(),
-		depth:    0,
+		vertices:              make([]Point, 4),
+		bound:                 cell.RectBound(),
+		depth:                 0,
 		num_find_vertex_calls: 0,
 	}
 	for i := 0; i < 4; i++ {
@@ -87,22 +88,22 @@ func NewLoopFromCell(cell Cell) *Loop {
 	return loop
 }
 
-func (l *Loop) IsValid() bool {
+func (l *Loop) Check() (error, *Point) {
 	// Loops must have at least 3 vertices.
 	if len(l.vertices) < 3 {
-		return false
+		return fmt.Errorf("Loops must have at least 3 vertices (current value = %d)", len(l.vertices)), nil
 	}
 	// All vertices must be unit length.
 	for _, v := range l.vertices {
 		if !v.IsUnit() {
-			return false
+			return fmt.Errorf("not unit length vertice %v", LatLngFromPoint(v)), &v
 		}
 	}
 	// Loops are not allowed to have any duplicate vertices.
 	vmap := map[Point]int{}
 	for i, v := range l.vertices {
 		if _, ok := vmap[v]; ok {
-			return false
+			return fmt.Errorf("duplicate vertice %v", LatLngFromPoint(v)), &v
 		}
 		vmap[v] = i
 	}
@@ -122,15 +123,20 @@ func (l *Loop) IsValid() bool {
 				crosses = crosser.RobustCrossing(l.vertex(ai+1)) > 0
 				prevIndex = ai + 1
 				if crosses {
-					break
+					return fmt.Errorf("%v - %v edge is crossed by %v - %v",
+							LatLngFromPoint(*l.vertex(i)), LatLngFromPoint(*l.vertex(i + 1)),
+							LatLngFromPoint(*l.vertex(ai)), LatLngFromPoint(*l.vertex(ai + 1))),
+						l.vertex(i)
 				}
 			}
 		}
-		if crosses {
-			break
-		}
 	}
-	return !crosses
+	return nil, nil
+}
+
+func (l *Loop) IsValid() bool {
+	err, _ := l.Check()
+	return err == nil
 }
 
 func (l *Loop) Depth() int { return l.depth }
@@ -145,10 +151,10 @@ func (l *Loop) Sign() int {
 
 func (l *Loop) Clone() *Loop {
 	loop := &Loop{
-		vertices:      make([]Point, len(l.vertices)),
-		bound:         l.bound,
-		origin_inside: l.origin_inside,
-		depth:         l.depth,
+		vertices:              make([]Point, len(l.vertices)),
+		bound:                 l.bound,
+		origin_inside:         l.origin_inside,
+		depth:                 l.depth,
 		num_find_vertex_calls: 0,
 	}
 	copy(loop.vertices, l.vertices)
